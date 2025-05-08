@@ -1,8 +1,9 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBody } from '@nestjs/swagger';
-import { UsersService } from './users.service';
+import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import { ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { UsersService } from './users.service';
+import { Admin } from 'src/auth/decorators/admin.decorator';
 
 @ApiTags('Usuários')
 @Controller('users')
@@ -42,6 +43,7 @@ export class UsersController {
     return this.usersService.create(createUserDto);
   }
 
+  @Admin()
   @Get()
   @ApiOperation({ summary: 'Listar todos os usuários' })
   @ApiResponse({
@@ -107,6 +109,7 @@ export class UsersController {
   findOne(@Param('id') id: string) {
     return this.usersService.findOne(id);
   }
+
   @ApiResponse({ status: 404, description: 'Usuário não encontrado.' })
   @Patch(':id')
   @ApiOperation({ summary: 'Atualizar um usuário pelo ID' })
@@ -142,6 +145,7 @@ export class UsersController {
     return this.usersService.update(id, updateUserDto);
   }
 
+  @Admin()
   @Patch(':id/toggle-admin')
   @ApiOperation({ summary: 'Alternar status de administrador de um usuário pelo ID' })
   @ApiParam({ name: 'id', description: 'ID do usuário', type: String })

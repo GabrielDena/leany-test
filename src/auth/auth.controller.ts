@@ -2,12 +2,14 @@ import { Body, Controller, Post } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { SignInDto } from './dtos/sign-in.dto';
+import { Public } from './decorators/public.decorator';
 
 @ApiTags('Authentication') // Group endpoints under the "Authentication" tag in Swagger
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  @Public()
   @Post('login')
   @ApiOperation({ summary: 'User login' }) // Brief description of the endpoint
   @ApiBody({
