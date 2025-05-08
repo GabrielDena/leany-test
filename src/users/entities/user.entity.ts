@@ -1,3 +1,4 @@
+import { Address } from 'src/addresses/entities/address.entity';
 import { Badge } from 'src/badges/entities/badge.entity';
 import { Pokemon } from 'src/pokemons/entities/pokemon.entity';
 import {
@@ -7,6 +8,7 @@ import {
   Entity,
   ManyToMany,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -31,27 +33,6 @@ export class User {
   @Column({ type: 'varchar', length: 255, nullable: true })
   phone: string;
 
-  @Column({ type: 'varchar', length: 255 })
-  address: string;
-
-  @Column({ type: 'int', nullable: true })
-  addressNumber: number;
-
-  @Column({ type: 'varchar', length: 255, nullable: true })
-  addressComplement: string;
-
-  @Column({ type: 'varchar', length: 255 })
-  city: string;
-
-  @Column({ type: 'varchar', length: 255 })
-  state: string;
-
-  @Column({ type: 'varchar', length: 255 })
-  country: string;
-
-  @Column({ type: 'varchar', length: 10 })
-  postalCode: string;
-
   @Column({ type: 'boolean', default: false })
   isAdmin: boolean;
 
@@ -64,7 +45,10 @@ export class User {
   @DeleteDateColumn({ type: 'timestamp', nullable: true })
   deletedAt: Date;
 
-  @OneToMany(() => Pokemon, (pokemon) => pokemon.userId)
+  @OneToOne(() => Address, (address) => address.user)
+  address: Address;
+
+  @OneToMany(() => Pokemon, (pokemon) => pokemon.user)
   pokemons: Pokemon[];
 
   @ManyToMany(() => Badge, (badge) => badge.users)

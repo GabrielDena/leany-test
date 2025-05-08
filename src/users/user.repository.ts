@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
+import { CreateUserDto } from './dto/create-user.dto';
 
 @Injectable()
 export class UsersRepository {
@@ -10,7 +11,7 @@ export class UsersRepository {
     private readonly repository: Repository<User>,
   ) {}
 
-  async createUser(userData: Partial<User>): Promise<User> {
+  async createUser(userData: CreateUserDto): Promise<User> {
     const user = this.repository.create(userData);
     return await this.repository.save(user);
   }
@@ -20,7 +21,19 @@ export class UsersRepository {
       where: {
         id,
       },
-      relations: ['badges', 'pokemons'],
+      relations: {
+        address: true,
+        pokemons: true,
+        badges: true,
+      },
+    });
+  }
+
+  async findUserByIdToUpdate(id: string): Promise<User | null> {
+    return await this.repository.findOne({
+      where: {
+        id,
+      },
     });
   }
 
@@ -28,14 +41,18 @@ export class UsersRepository {
     return await this.repository.findOne({ where: { email } });
   }
 
-  async updateUser(id: string, user: User): Promise<User> {
-    await this.repository.update(id, user);
-    return (await this.findUserById(id)) as User;
+  async updateUser(user: User): Promise<User> {
+    await this.repository.save(user);
+    return (await this.findUserById(user.id)) as User;
   }
 
   async fildAllUsers(): Promise<User[]> {
     return await this.repository.find({
-      relations: ['badges', 'pokemons'],
+      relations: {
+        address: true,
+        pokemons: true,
+        badges: true,
+      },
       order: {
         firstName: 'ASC',
         lastName: 'ASC',
@@ -43,13 +60,8 @@ export class UsersRepository {
     });
   }
 
-  async setAdmin(id: string, user: User): Promise<User> {
-    await this.updateUser(id, user);
-    return (await this.findUserById(id)) as User;
-  }
-
   async deleteUser(id: string): Promise<void> {
-    await this.repository.delete(id);
+    await this.repository.softDelete(id);
     return;
   }
 }

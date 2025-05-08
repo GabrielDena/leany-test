@@ -107,7 +107,7 @@ export class UsersController {
   findOne(@Param('id') id: string) {
     return this.usersService.findOne(id);
   }
-
+  @ApiResponse({ status: 404, description: 'Usuário não encontrado.' })
   @Patch(':id')
   @ApiOperation({ summary: 'Atualizar um usuário pelo ID' })
   @ApiParam({ name: 'id', description: 'ID do usuário', type: String })
@@ -140,6 +140,39 @@ export class UsersController {
   @ApiResponse({ status: 404, description: 'Usuário não encontrado.' })
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.usersService.update(id, updateUserDto);
+  }
+
+  @Patch(':id/toggle-admin')
+  @ApiOperation({ summary: 'Alternar status de administrador de um usuário pelo ID' })
+  @ApiParam({ name: 'id', description: 'ID do usuário', type: String })
+  @ApiResponse({
+    status: 200,
+    description: 'Status de administrador alternado com sucesso.',
+    schema: {
+      example: {
+        id: '123e4567-e89b-12d3-a456-426614174000',
+        email: 'updateduser@example.com',
+        firstName: 'John',
+        lastName: 'Doe',
+        phone: '123456789',
+        address: '123 Main St',
+        addressNumber: 123,
+        addressComplement: 'Apt 4B',
+        city: 'São Paulo',
+        state: 'SP',
+        country: 'Brazil',
+        postalCode: '12.345-678',
+        isAdmin: false,
+        badges: [{ id: 'badge1', name: 'Badge 1', description: 'First badge' }],
+        pokemons: [{ id: 'pokemon1', name: 'Pikachu', species: 'Electric' }],
+        createdAt: '2025-05-08T14:20:38.000Z',
+        updatedAt: '2025-05-08T14:20:38.000Z',
+      },
+    },
+  })
+  @ApiResponse({ status: 404, description: 'Usuário não encontrado.' })
+  toggleAdmin(@Param('id') id: string) {
+    return this.usersService.toggleAdmin(id);
   }
 
   @Delete(':id')

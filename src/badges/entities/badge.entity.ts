@@ -4,6 +4,7 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  JoinTable,
   ManyToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -30,5 +31,6 @@ export class Badge {
   deletedAt: Date;
 
   @ManyToMany(() => User, (user) => user.badges)
+  @JoinTable()
   users: User[];
 }

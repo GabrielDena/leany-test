@@ -7,6 +7,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { PokemonsModule } from './pokemons/pokemons.module';
 import { BadgesModule } from './badges/badges.module';
 import { ExternalModule } from './external/external.module';
+import { AddressesModule } from './addresses/addresses.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -33,6 +35,8 @@ import { ExternalModule } from './external/external.module';
     PokemonsModule,
     BadgesModule,
     ExternalModule,
+    AddressesModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

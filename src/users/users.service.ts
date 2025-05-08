@@ -4,28 +4,32 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
-import { ExternalService } from 'src/external/external.service';
+import { AddressesService } from 'src/addresses/addresses.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersRepository } from './user.repository';
+import { hash } from 'argon2';
 
 @Injectable()
 export class UsersService {
   constructor(
     private readonly repository: UsersRepository,
-    private readonly externalService: ExternalService,
+    private readonly addressService: AddressesService,
   ) {}
 
   async create(createUserDto: CreateUserDto) {
-    const addressInformation = await this.externalService.getCepInformation(
-      createUserDto.postalCode,
-    );
     const userData = {
       ...createUserDto,
-      ...addressInformation,
+      password: await hash(createUserDto.password),
     };
     const user = await this.repository.createUser(userData);
-    return user;
+    await this.addressService.createAddress({
+      user,
+      postalCode: createUserDto.postalCode,
+      number: createUserDto.addressNumber,
+      complement: createUserDto.addressComplement,
+    });
+    return await this.repository.findUserById(user.id);
   }
 
   async findAll() {
@@ -45,21 +49,16 @@ export class UsersService {
   }
 
   async update(id: string, updateUserDto: UpdateUserDto) {
-    const userToUpdate = await this.repository.findUserById(id);
+    const userToUpdate = await this.repository.findUserByIdToUpdate(id);
     if (!userToUpdate) {
       throw new NotFoundException('User not found');
     }
     if (updateUserDto.postalCode) {
-      const addressInformation = await this.externalService.getCepInformation(
-        updateUserDto.postalCode,
-      );
-      if (!addressInformation) {
-        throw new InternalServerErrorException('Failed to fetch address information');
-      }
-      updateUserDto = {
-        ...updateUserDto,
-        ...addressInformation,
-      };
+      await this.addressService.updateAddress(id, {
+        postalCode: updateUserDto.postalCode,
+        number: updateUserDto.addressNumber,
+        complement: updateUserDto.addressComplement,
+      });
     }
     if (updateUserDto.email) {
       const existingUser = await this.repository.findUserByEmail(updateUserDto.email);
@@ -67,10 +66,23 @@ export class UsersService {
         throw new BadRequestException('Email already in use');
       }
     }
-    const updatedUser = await this.repository.updateUser(id, {
+    const updatedUser = await this.repository.updateUser({
       ...userToUpdate,
       ...updateUserDto,
     });
+    if (!updatedUser) {
+      throw new InternalServerErrorException('Failed to update user');
+    }
+    return updatedUser;
+  }
+
+  async toggleAdmin(id: string) {
+    const userToUpdate = await this.repository.findUserById(id);
+    if (!userToUpdate) {
+      throw new NotFoundException('User not found');
+    }
+    userToUpdate.isAdmin = !userToUpdate.isAdmin;
+    const updatedUser = await this.repository.updateUser(userToUpdate);
     if (!updatedUser) {
       throw new InternalServerErrorException('Failed to update user');
     }

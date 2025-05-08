@@ -4,6 +4,7 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -30,5 +31,6 @@ export class Pokemon {
   deletedAt: Date;
 
   @ManyToOne(() => User, (user) => user.pokemons, { onDelete: 'CASCADE' })
-  userId: string;
+  @JoinColumn({ name: 'userId' })
+  user: User;
 }
