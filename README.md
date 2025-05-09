@@ -48,7 +48,7 @@ npm run migration:run
 
 ### 6. Rodar a Aplicação
 
-#### Para Desenvolvimento:
+#### Para Desenvolvimento
 
 - Modo normal:
 
@@ -62,7 +62,7 @@ npm run start:dev
 npm run start:debug
 ```
 
-#### Para Produção:
+#### Para Produção
 
 - Compile o projeto:
 
@@ -78,7 +78,7 @@ npm run start:prod
 
 ### 7. Acessar a Documentação Swagger
 
-A documentação Swagger estará disponível no seguinte endpoint: http://localhost:3000/api
+A documentação Swagger estará disponível no seguinte endpoint: <http://localhost:3000/api>
 
 #### Observações Relevantes
 
