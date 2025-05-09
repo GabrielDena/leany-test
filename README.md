@@ -76,7 +76,7 @@ npm run build
 npm run start:prod
 ```
 
-### 6. Acessar a Documentação Swagger
+### 7. Acessar a Documentação Swagger
 
 A documentação Swagger estará disponível no seguinte endpoint: http://localhost:3000/api
 
