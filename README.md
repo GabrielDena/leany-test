@@ -38,7 +38,15 @@ cp .env.example .env
 
 Observação: A única variável obrigatória a ser configurada no .env é o JWT_SECRET. As credenciais padrão do banco de dados estão configuradas como fallback, mas podem ser alteradas no .env.
 
-### 5. Rodar a Aplicação
+### 5. Rodar Migrations
+
+Com o banco rodando e as variáveis configuradas é necessário rodar as migrations para criação das tabelas:
+
+```bash
+npm run migration:run
+```
+
+### 6. Rodar a Aplicação
 
 #### Para Desenvolvimento:
 
