@@ -1,26 +1,69 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { UsersService } from 'src/users/users.service';
+import { BadgesRepository } from './badges.repository';
 import { CreateBadgeDto } from './dto/create-badge.dto';
 import { UpdateBadgeDto } from './dto/update-badge.dto';
 
 @Injectable()
 export class BadgesService {
-  create(createBadgeDto: CreateBadgeDto) {
-    return 'This action adds a new badge';
+  constructor(
+    private readonly badgesRepository: BadgesRepository,
+    private readonly usersService: UsersService,
+  ) {}
+
+  async create(createBadgeDto: CreateBadgeDto) {
+    return await this.badgesRepository.createBadge(createBadgeDto);
   }
 
-  findAll() {
-    return `This action returns all badges`;
+  async findAll() {
+    return await this.badgesRepository.findAllBadges();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} badge`;
+  async findOne(id: string, withUser?: boolean) {
+    const badge = await this.badgesRepository.findOneBy(id, withUser);
+    if (!badge) {
+      throw new NotFoundException('Badge not found');
+    }
+    return badge;
   }
 
-  update(id: number, updateBadgeDto: UpdateBadgeDto) {
-    return `This action updates a #${id} badge`;
+  async update(id: string, updateBadgeDto: UpdateBadgeDto) {
+    const badge = await this.badgesRepository.findOneBy(id, true);
+    if (!badge) {
+      throw new NotFoundException('Badge not found');
+    }
+    if (badge.users?.length > 0) {
+      throw new BadRequestException('Badge already given to users');
+    }
+    return await this.badgesRepository.updateBadge({ ...badge, ...updateBadgeDto });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} badge`;
+  async remove(id: string) {
+    const badge = await this.badgesRepository.findOneBy(id);
+    if (!badge) {
+      throw new NotFoundException('Badge not found');
+    }
+    await this.badgesRepository.deleteBadge(badge);
+    return;
+  }
+
+  async giveBadgeToUsers(badgeId: string, usersIds: string[]) {
+    const badge = await this.badgesRepository.findOneBy(badgeId, true);
+    if (!badge) {
+      throw new NotFoundException('Badge not found');
+    }
+    if (!badge.users) {
+      badge.users = [];
+    }
+    for (const userId of usersIds) {
+      try {
+        const user = await this.usersService.findOne(userId);
+        badge.users.push(user);
+      } catch {
+        console.error(`User with ID ${userId} not found`);
+      }
+    }
+    await this.badgesRepository.updateBadge(badge);
+    return this.badgesRepository.findOneBy(badge.id, true);
   }
 }
