@@ -1,5 +1,5 @@
 export interface PayloadInterface {
-  id: number;
+  id: string;
   email: string;
   isAdmin: boolean;
 }

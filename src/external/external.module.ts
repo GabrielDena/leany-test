@@ -1,8 +1,9 @@
 import { Module } from '@nestjs/common';
-import { ExternalService } from './external.service';
+import { CepService } from './cep.service';
+import { PokeapiService } from './pokeapi.service';
 
 @Module({
-  providers: [ExternalService],
-  exports: [ExternalService],
+  providers: [CepService, PokeapiService],
+  exports: [CepService, PokeapiService],
 })
 export class ExternalModule {}

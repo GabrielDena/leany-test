@@ -1,12 +1,12 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { AddressesRepository } from './adresses.repository';
-import { ExternalService } from 'src/external/external.service';
+import { CepService } from 'src/external/cep.service';
 import { User } from 'src/users/entities/user.entity';
 
 @Injectable()
 export class AddressesService {
   constructor(
-    private readonly externalService: ExternalService,
+    private readonly externalService: CepService,
     private readonly repository: AddressesRepository,
   ) {}
 

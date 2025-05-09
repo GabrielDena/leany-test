@@ -1,15 +1,17 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Admin } from 'src/auth/decorators/admin.decorator';
+import { Public } from 'src/auth/decorators/public.decorator';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersService } from './users.service';
-import { Admin } from 'src/auth/decorators/admin.decorator';
 
 @ApiTags('Usuários')
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  @Public()
   @Post()
   @ApiOperation({ summary: 'Criar um novo usuário' })
   @ApiBody({ type: CreateUserDto, description: 'Dados necessários para criar um usuário' })

@@ -27,7 +27,7 @@ export class Badge {
   @UpdateDateColumn({ type: 'timestamp' })
   updatedAt: Date;
 
-  @DeleteDateColumn({ type: 'timestamp', nullable: true })
+  @DeleteDateColumn({ type: 'timestamp', nullable: true, select: false })
   deletedAt: Date;
 
   @ManyToMany(() => User, (user) => user.badges)

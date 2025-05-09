@@ -42,7 +42,7 @@ export class User {
   @UpdateDateColumn({ type: 'timestamp' })
   updatedAt: Date;
 
-  @DeleteDateColumn({ type: 'timestamp', nullable: true })
+  @DeleteDateColumn({ type: 'timestamp', nullable: true, select: false })
   deletedAt: Date;
 
   @OneToOne(() => Address, (address) => address.user)

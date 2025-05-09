@@ -34,9 +34,6 @@ export class UsersService {
 
   async findAll() {
     const users = await this.repository.fildAllUsers();
-    if (!users) {
-      throw new InternalServerErrorException('Failed to fetch users');
-    }
     return users;
   }
 
